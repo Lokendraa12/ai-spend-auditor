@@ -18,21 +18,8 @@ function SpendForm() {
         ];
   });
 
-  const [teamSize, setTeamSize] = useState(() => {
-  return localStorage.getItem("teamSize") || "";
-});
-
-const [useCase, setUseCase] = useState(() => {
-  return localStorage.getItem("useCase") || "coding";
-});
-
-useEffect(() => {
-  localStorage.setItem("teamSize", teamSize);
-}, [teamSize]);
-
-useEffect(() => {
-  localStorage.setItem("useCase", useCase);
-}, [useCase]);
+  const [teamSize, setTeamSize] = useState("");
+  const [useCase, setUseCase] = useState("coding");
 
   useEffect(() => {
     localStorage.setItem("auditTools", JSON.stringify(tools));
