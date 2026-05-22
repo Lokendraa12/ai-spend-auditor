@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { aiTools } from "../data/tools";
 import { Trash2, Plus } from "lucide-react";
+import { generateAudit } from "../utils/auditEngine";
 
 function SpendForm() {
   const [tools, setTools] = useState(() => {
@@ -18,8 +19,21 @@ function SpendForm() {
         ];
   });
 
-  const [teamSize, setTeamSize] = useState("");
-  const [useCase, setUseCase] = useState("coding");
+  const [teamSize, setTeamSize] = useState(() => {
+  return localStorage.getItem("teamSize") || "";
+});
+
+const [useCase, setUseCase] = useState(() => {
+  return localStorage.getItem("useCase") || "coding";
+});
+
+useEffect(() => {
+  localStorage.setItem("teamSize", teamSize);
+}, [teamSize]);
+
+useEffect(() => {
+  localStorage.setItem("useCase", useCase);
+}, [useCase]);
 
   useEffect(() => {
     localStorage.setItem("auditTools", JSON.stringify(tools));
@@ -56,18 +70,22 @@ function SpendForm() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const auditData = {
-      tools,
-      teamSize,
-      useCase,
-    };
-
-    console.log(auditData);
-
-    alert("Audit data saved successfully!");
+  const auditData = {
+    tools,
+    teamSize,
+    useCase,
   };
+
+  const auditResult = generateAudit(auditData);
+
+  localStorage.setItem("auditResult", JSON.stringify(auditResult));
+
+  console.log("Audit Result:", auditResult);
+
+  alert(`Audit generated! Estimated monthly savings: $${auditResult.totalMonthlySavings}`);
+};
 
   return (
     <section className="px-6 py-20 bg-slate-950 text-white">
