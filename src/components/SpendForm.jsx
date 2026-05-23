@@ -2,38 +2,42 @@ import { useEffect, useState } from "react";
 import { aiTools } from "../data/tools";
 import { Trash2, Plus } from "lucide-react";
 import { generateAudit } from "../utils/auditEngine";
+import { pricingData } from "../data/pricing";
 
-function SpendForm() {
+function SpendForm({ setAudit }) {
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
   const [tools, setTools] = useState(() => {
     const saved = localStorage.getItem("auditTools");
 
     return saved
       ? JSON.parse(saved)
       : [
-          {
-            tool: "Cursor",
-            plan: "Pro",
-            monthlySpend: "",
-            seats: "",
-          },
-        ];
+        {
+          tool: "Cursor",
+          plan: "Pro",
+          monthlySpend: "",
+          seats: "",
+        },
+      ];
   });
 
   const [teamSize, setTeamSize] = useState(() => {
-  return localStorage.getItem("teamSize") || "";
-});
+    return localStorage.getItem("teamSize") || "";
+  });
 
-const [useCase, setUseCase] = useState(() => {
-  return localStorage.getItem("useCase") || "coding";
-});
+  const [useCase, setUseCase] = useState(() => {
+    return localStorage.getItem("useCase") || "coding";
+  });
 
-useEffect(() => {
-  localStorage.setItem("teamSize", teamSize);
-}, [teamSize]);
+  useEffect(() => {
+    localStorage.setItem("teamSize", teamSize);
+  }, [teamSize]);
 
-useEffect(() => {
-  localStorage.setItem("useCase", useCase);
-}, [useCase]);
+  useEffect(() => {
+    localStorage.setItem("useCase", useCase);
+  }, [useCase]);
 
   useEffect(() => {
     localStorage.setItem("auditTools", JSON.stringify(tools));
@@ -64,28 +68,91 @@ useEffect(() => {
     ]);
   };
 
+const getMaxSeats = (tool, plan, spend) => {
+
+  const planPrice =
+    pricingData[tool]?.[plan] || 1;
+
+  const monthlySpend =
+    Number(spend) || 0;
+
+  return Math.floor(
+    monthlySpend / planPrice
+  );
+};
+const hasSeatLimitError = tools.some((item) => {
+
+  const maxSeats = getMaxSeats(
+    item.tool,
+    item.plan,
+    item.monthlySpend
+  );
+
+  return Number(item.seats) > maxSeats;
+});
+
   const removeTool = (index) => {
     const updated = tools.filter((_, i) => i !== index);
     setTools(updated);
   };
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const auditData = {
-    tools,
-    teamSize,
-    useCase,
+    setLoading(true);
+    setSuccessMessage("");
+
+    setError("");
+
+    for (const item of tools) {
+
+      const planPrice =
+        pricingData[item.tool]?.[item.plan] || 0;
+
+      const seats = Number(item.seats) || 0;
+
+      const spend = Number(item.monthlySpend) || 0;
+
+      const minimumRequiredCost = planPrice * seats;
+
+      if (spend < minimumRequiredCost) {
+
+        setLoading(false);
+
+        setError(
+          `${item.tool} ${item.plan} requires at least $${minimumRequiredCost}/month for ${seats} seats.`
+        );
+
+        return;
+      }
+    }
+
+    const auditData = {
+      tools,
+      teamSize,
+      useCase,
+    };
+
+    setTimeout(() => {
+      const auditResult = generateAudit(auditData);
+
+      localStorage.setItem(
+        "auditResult",
+        JSON.stringify(auditResult)
+      );
+
+      setAudit(auditResult);
+
+      setLoading(false);
+
+      setSuccessMessage(
+        `Audit generated successfully! You could save $${auditResult.totalMonthlySavings}/month.`
+      );
+
+      console.log(auditResult);
+
+    }, 1500);
   };
-
-  const auditResult = generateAudit(auditData);
-
-  localStorage.setItem("auditResult", JSON.stringify(auditResult));
-
-  console.log("Audit Result:", auditResult);
-
-  alert(`Audit generated! Estimated monthly savings: $${auditResult.totalMonthlySavings}`);
-};
 
   return (
     <section className="px-6 py-20 bg-slate-950 text-white">
@@ -186,15 +253,47 @@ useEffect(() => {
                       className="p-4 rounded-xl bg-slate-800 border border-slate-700"
                     />
 
-                    <input
-                      type="number"
-                      placeholder="Seats"
-                      value={item.seats}
-                      onChange={(e) =>
-                        handleToolChange(index, "seats", e.target.value)
-                      }
-                      className="p-4 rounded-xl bg-slate-800 border border-slate-700"
-                    />
+                     <div>
+  <input
+    type="number"
+    placeholder="Seats"
+    value={item.seats}
+    min="1"
+    onChange={(e) => {
+
+      const maxSeats = getMaxSeats(
+        item.tool,
+        item.plan,
+        item.monthlySpend
+      );
+
+      let value = Number(e.target.value);
+
+      if (value > maxSeats) {
+        return;
+      }
+
+      handleToolChange(
+        index,
+        "seats",
+        value
+      );
+    }}
+    className="w-full p-4 rounded-xl bg-slate-800 border border-slate-700"
+  />
+
+  {Number(item.seats) >=
+  getMaxSeats(
+    item.tool,
+    item.plan,
+    item.monthlySpend
+  ) &&
+  Number(item.monthlySpend) > 0 && (
+    <p className="text-red-400 text-sm mt-2">
+      Increase monthly spend to unlock more seats.
+    </p>
+)}
+</div>
                   </div>
                 </div>
               );
@@ -232,9 +331,32 @@ useEffect(() => {
             </select>
           </div>
 
-          <button className="w-full mt-10 bg-blue-500 hover:bg-blue-600 transition p-5 rounded-2xl text-lg font-semibold">
-            Generate AI Spend Audit
-          </button>
+          <button
+  disabled={loading || hasSeatLimitError}
+  className={`w-full mt-10 p-5 rounded-2xl text-lg font-semibold transition
+  ${
+    loading || hasSeatLimitError
+      ? "bg-slate-700 cursor-not-allowed opacity-50"
+      : "bg-blue-500 hover:bg-blue-600"
+  }`}
+>
+  {loading
+    ? "Generating Audit..."
+    : "Generate AI Spend Audit"}
+</button>
+
+          {successMessage && (
+            <div className="mt-5 bg-green-500/10 border border-green-500 text-green-400 p-4 rounded-2xl">
+              {successMessage}
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-5 bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-2xl">
+              {error}
+            </div>
+          )}
+          
         </form>
       </div>
     </section>
