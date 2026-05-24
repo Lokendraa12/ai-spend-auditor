@@ -1,11 +1,20 @@
 import { TrendingDown, DollarSign, BadgeCheck, CheckCircle } from "lucide-react";
+import { generateSummary } from "../utils/generateSummary";
+import { motion } from "framer-motion";
 
 function AuditResults({ audit }) {
   if (!audit) return null;
+  const summary = generateSummary(audit);
 
   return (
     <section className="px-6 py-20 bg-slate-950 text-white">
-      <div className="max-w-6xl mx-auto">
+  
+      <motion.div
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className="max-w-6xl mx-auto"
+>
 
         {/* Hero Section */}
 
@@ -57,6 +66,16 @@ function AuditResults({ audit }) {
             </div>
           </div>
         </div>
+
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 mb-12">
+  <h3 className="text-3xl font-bold mb-5">
+    AI Audit Summary
+  </h3>
+
+  <p className="text-slate-300 leading-relaxed text-lg whitespace-pre-line">
+    {summary}
+  </p>
+</div>
 
         {/* Optimized State */}
 
@@ -214,7 +233,8 @@ function AuditResults({ audit }) {
     </button>
   </div>
 )}
-      </div>
+      </motion.div>
+      
     </section>
   );
 }

@@ -42,3 +42,23 @@ What I learned: Learned how to structure scalable React audit systems, implement
 Blockers / what I'm stuck on: Handling edge cases for seat limits and maintaining realistic audit recommendations.
 
 Plan for tomorrow: Add AI-generated personalized summaries, export/share functionality, and improve animations with better mobile responsiveness.
+
+## Day 5 — 2026-05-23
+
+**Hours worked:** 5
+
+### What I built
+- Added AI-generated audit summaries
+- Improved dashboard UI and animations
+- Added personalized savings insights
+- Enhanced enterprise overspending messaging
+
+### What I learned
+- Dynamic summary generation
+- SaaS dashboard UX improvements
+- Conditional rendering in React
+
+### Plan for Day 6
+- Add export/share functionality
+- Final UI polish
+- Improve responsiveness
