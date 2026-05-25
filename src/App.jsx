@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import SpendForm from "./components/SpendForm";
 import AuditResults from "./components/AuditResults";
+import Footer from "./components/Footer";
 
 function App() {
   const [audit, setAudit] = useState(() => {
@@ -25,6 +26,7 @@ function App() {
       <SpendForm setAudit={setAudit} />
 
       <AuditResults audit={audit} />
+      <Footer />
     </div>
   );
 }
