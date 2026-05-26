@@ -4,41 +4,120 @@ import { CheckCircle } from "lucide-react";
 import { generateSummary } from "../utils/generateSummary";
 import { exportAuditPDF } from "../utils/exportAudit";
 
-function AuditResults({ audit }) {
+function AuditResults({ audit, setShowConsultation }) {
+
 
   if (!audit) {
-    return (
-      <section className="px-6 py-24 text-center text-white">
 
-        <div className="text-8xl mb-8">
+  return (
+
+    <section className="px-6 py-32 text-white relative overflow-hidden">
+
+      {/* BACKGROUND BLUR */}
+
+      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 blur-[120px] rounded-full" />
+
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-cyan-500/20 blur-[120px] rounded-full" />
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+
+        {/* BADGE */}
+
+        <div className="inline-block bg-cyan-500/10 border border-cyan-500 text-cyan-400 px-5 py-2 rounded-full mb-8">
+
+          AI Infrastructure Optimization Platform
+
+        </div>
+
+        {/* ICON */}
+
+        <div className="text-8xl mb-10">
           📊
         </div>
 
-        <h2 className="text-5xl font-bold">
-          No Audit Generated Yet
+        {/* TITLE */}
+
+        <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+
+          Optimize Your
+          <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            {" "}AI Spend
+          </span>
+
         </h2>
 
-        <p className="text-slate-400 mt-6 text-lg">
-          Generate your first AI cost optimization audit.
+        {/* DESCRIPTION */}
+
+        <p className="text-slate-400 mt-8 text-xl max-w-2xl mx-auto leading-relaxed">
+
+          Discover hidden overspending across your AI subscriptions,
+          enterprise tooling, and API infrastructure with intelligent
+          optimization recommendations.
+
         </p>
 
-      </section>
-    );
-  }
+        {/* METRICS */}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+
+            <h3 className="text-4xl font-bold text-white">
+              $2.4M+
+            </h3>
+
+            <p className="text-slate-400 mt-3">
+              AI Spend Audited
+            </p>
+
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+
+            <h3 className="text-4xl font-bold text-white">
+              150+
+            </h3>
+
+            <p className="text-slate-400 mt-3">
+              AI Workflows Optimized
+            </p>
+
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+
+            <h3 className="text-4xl font-bold text-white">
+              92%
+            </h3>
+
+            <p className="text-slate-400 mt-3">
+              Optimization Accuracy
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  );
+}
 
   const summary = generateSummary(audit);
 
   const optimizationScore =
     audit.totalMonthlySpend > 0
       ? Math.max(
-          10,
-          100 -
-            Math.round(
-              (audit.totalMonthlySavings /
-                audit.totalMonthlySpend) *
-                100
-            )
+        10,
+        100 -
+        Math.round(
+          (audit.totalMonthlySavings /
+            audit.totalMonthlySpend) *
+          100
         )
+      )
       : 100;
 
   const topRecommendation =
@@ -112,7 +191,7 @@ function AuditResults({ audit }) {
 
             <h2 className="text-3xl md:text-5xl font-bold text-green-400">
               $
-             {audit.totalMonthlySavings}
+              {audit.totalMonthlySavings}
             </h2>
 
           </div>
@@ -269,8 +348,13 @@ function AuditResults({ audit }) {
               Large AI spend inefficiencies detected across your stack.
             </p>
 
-            <button className="mt-8 bg-white text-black px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition">
-              Book Credex Consultation
+            <button
+              onClick={() =>
+                setShowConsultation(true)
+              }
+              className="mt-8 bg-white text-black px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition"
+            >
+              Book Enterprise AI Consultation
             </button>
 
           </div>
