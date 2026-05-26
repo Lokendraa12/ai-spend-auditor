@@ -12,7 +12,7 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-block mb-6 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500 text-blue-400 text-sm"
         >
-           AI Spend Optimization Platform
+          AI Spend Optimization Platform
         </motion.div>
 
         {/* Heading */}
@@ -48,13 +48,53 @@ function Hero() {
           className="mt-10 flex flex-col md:flex-row gap-4 justify-center"
         >
 
-          <button className="bg-blue-500 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-600 transition shadow-lg shadow-blue-500/20">
+          <button
+            onClick={() => {
+
+              const formSection =
+                document.getElementById(
+                  "spend-form"
+                );
+
+              if (formSection) {
+
+                formSection.scrollIntoView({
+                  behavior: "smooth",
+                });
+
+              }
+
+            }}
+            className="bg-blue-500 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-600 transition shadow-lg shadow-blue-500/20"
+          >
+
             Run Free AI Audit
+
           </button>
 
-          <button className="bg-white/10 border border-white/20 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition">
-            View Sample Report
-          </button>
+          <button
+  onClick={() => {
+
+    const auditSection =
+      document.getElementById(
+        "audit-section"
+      );
+
+    if (auditSection) {
+
+      auditSection.scrollIntoView({
+        behavior: "smooth",
+      });
+
+    }
+
+  }}
+  className="bg-white/10 border border-white/20 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition"
+>
+
+  View Sample Report
+
+</button>
 
         </motion.div>
 
@@ -93,7 +133,7 @@ function Hero() {
 
         </div>
 
-        
+
 
       </div>
     </section>
